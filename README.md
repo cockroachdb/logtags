@@ -56,6 +56,21 @@ To add multiple k/v pairs in one go, without using quadratic space in
 3. use `func AddTags(ctx context.Context, tags *Buffer) context.Context` to embark
    all the k/v pairs at once.
 
-To format all the contained k/v pairs in a `Buffer`, use its `String()` method:
-- when the `value` part is `nil`, `String()` just displays the key.
-- when the `value` part is non-nil, `String()` renders it to a string.
+To format all the contained k/v pairs in a `Buffer`, use its
+`String()` or `FormatToString(*strings.Builder)` methods:
+- when the `value` part is `nil`,  only the key is displayed.
+- when the `value` part is non-nil, and the key is just one character
+  long, the key and value are concatenated for display. This enables e.g.
+  printing k=`"n"`, v=123 as `n123`.
+- otherwise, the key and value are printed with `=` as separator.
+
+For example:
+
+```go
+   ctx = logtags.AddTag(ctx, "foo", 123)
+   ctx = logtags.AddTag(ctx, "x", 456)
+   ctx = logtags.AddTag(ctx, "bar", nil)
+   fmt.Println(logtags.FromContext(ctx).String())
+   // prints foo=123,x456,bar
+```
+

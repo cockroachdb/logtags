@@ -32,15 +32,15 @@ func buffer(str string) *Buffer {
 
 func TestBufferMerge(t *testing.T) {
 	cases := []struct{ left, right, expected string }{
-		{"a=1", "b=2", "a=1,b=2"},
-		{"a=1,b=2", "c=3,d=4", "a=1,b=2,c=3,d=4"},
+		{"a=1", "b=2", "a1,b2"},
+		{"a=1,b=2", "c=3,d=4", "a1,b2,c3,d4"},
 
-		{"a=1", "a=2", "a=2"},
+		{"a=1", "a=2", "a2"},
 
-		{"a=1,b=2,c=3", "b=4,d=5", "a=1,b=4,c=3,d=5"},
-		{"b=2,d=3", "a=4,b=5,c=6,d=7,e=8", "a=4,b=5,c=6,d=7,e=8"},
-		{"b=2,d=3", "a=4,b=5,c=6,d=7", "a=4,b=5,c=6,d=7"},
-		{"b=2,d=3", "b=5,c=6,d=7,e=8", "b=5,c=6,d=7,e=8"},
+		{"a=1,b=2,c=3", "b=4,d=5", "a1,b4,c3,d5"},
+		{"b=2,d=3", "a=4,b=5,c=6,d=7,e=8", "a4,b5,c6,d7,e8"},
+		{"b=2,d=3", "a=4,b=5,c=6,d=7", "a4,b5,c6,d7"},
+		{"b=2,d=3", "b=5,c=6,d=7,e=8", "b5,c6,d7,e8"},
 	}
 	for _, tc := range cases {
 		l := buffer(tc.left)

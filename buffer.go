@@ -113,18 +113,33 @@ func (b *Buffer) Merge(other *Buffer) *Buffer {
 	return res
 }
 
-// String returns a string representation of the tags. Intended for debugging;
-// note that this is not exactly the same with the representation that
-// ultimately appears in logs (which is "prettier").
+// String returns a string representation of the tags.
 func (b *Buffer) String() string {
 	var buf strings.Builder
-	for i, t := range b.Get() {
-		if i > 0 {
-			buf.WriteString(",")
-		}
-		fmt.Fprintf(&buf, "%s=%s", t.Key(), t.Value())
-	}
+	b.FormatToString(&buf)
 	return buf.String()
+}
+
+// FormatToString emits the k/v pairs to a strings.Builder.
+// - the k/v pairs are separated by commas (& no spaces).
+// - if there is no value, only the key is printed.
+// - if there is a value, and the key is just 1 character long,
+//   the key and the value are concatenated.
+//   This supports e.g. printing k="n", v=123 as "n123".
+// - otherwise, it prints "k=v".
+func (b *Buffer) FormatToString(buf *strings.Builder) {
+	comma := ""
+	for _, t := range b.Get() {
+		buf.WriteString(comma)
+		buf.WriteString(t.Key())
+		if v := t.Value(); v != nil && v != "" {
+			if len(t.Key()) > 1 {
+				buf.WriteByte('=')
+			}
+			fmt.Fprint(buf, v)
+		}
+		comma = ","
+	}
 }
 
 func (b *Buffer) init(length, maxLenHint int) {
