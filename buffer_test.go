@@ -13,6 +13,7 @@
 package logtags
 
 import (
+	"context"
 	"strings"
 	"testing"
 )
@@ -48,6 +49,19 @@ func TestBufferMerge(t *testing.T) {
 		if res := l.Merge(r).String(); res != tc.expected {
 			t.Errorf("merge %s with %s: got %s expected %s", tc.left, tc.right, res, tc.expected)
 		}
+	}
+}
+
+func TestBufferAdd(t *testing.T) {
+	b := buffer("a=1")
+	ctx := AddTags(context.Background(), b)
+	if expected, res := "a1", FromContext(ctx).String(); res != expected {
+		t.Errorf("AddTags failed: expected %q, got %q", expected, res)
+	}
+
+	ctx = AddTags(ctx, FromContext(context.Background()))
+	if expected, res := "a1", FromContext(ctx).String(); res != expected {
+		t.Errorf("AddTags failed: expected %q, got %q", expected, res)
 	}
 }
 
