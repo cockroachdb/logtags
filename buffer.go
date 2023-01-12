@@ -38,6 +38,17 @@ func (b *Buffer) Get() []Tag {
 	return b.tags
 }
 
+// GetTag returns the tag corresponding to the given key. If the tag doesn't
+// exist, the bool return value will be false.
+func (b *Buffer) GetTag(key string) (Tag, bool) {
+	for _, t := range b.tags {
+		if t.Key() == key {
+			return t, true
+		}
+	}
+	return Tag{}, false
+}
+
 // Add returns a new buffer with one more tag. If the tag has the same key as an
 // earlier tag, that tag is overwritten.
 // The receiver can be nil.
