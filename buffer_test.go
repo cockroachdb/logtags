@@ -65,6 +65,26 @@ func TestBufferAdd(t *testing.T) {
 	}
 }
 
+func TestBufferBuild(t *testing.T) {
+	bld := BuildTagBuffer()
+	bld.Add("a", 1)
+	bld.Add("b", 2)
+	b := bld.Finish()
+	if expected := "a1,b2"; b.String() != expected {
+		t.Fatalf("expected %q, got %q", expected, b.String())
+	}
+
+	bld = BuildTagBuffer()
+	bld.Add("a", 1)
+	bld.Add("b", 2)
+	bld.Add("a", 10)
+	bld.Add("c", 3)
+	b = bld.Finish()
+	if expected := "a10,b2,c3"; b.String() != expected {
+		t.Fatalf("expected %q, got %q", expected, b.String())
+	}
+}
+
 func BenchmarkBuffer(b *testing.B) {
 	// This benchmark uses a set of tag operations that have been observed to be
 	// the most common during a mixed KV workload:

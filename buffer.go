@@ -33,6 +33,37 @@ func SingleTagBuffer(key string, value interface{}) *Buffer {
 	return b
 }
 
+// BuildTagBuffer is used to build a *Buffer that contains an arbitrary number
+// of tags. Sample usage:
+//
+//	bld := BuildTagBuffer()
+//	bld.Add("a", 1)
+//	bld.Add("b", 2)
+//	buf := bld.Finish()
+func BuildTagBuffer() TagBufferBuilder {
+	bld := TagBufferBuilder{b: &Buffer{}}
+	bld.b.init(0, 0)
+	return bld
+}
+
+// TagBufferBuilder is returned by BuildTagBuffer.
+type TagBufferBuilder struct {
+	b *Buffer
+}
+
+// Add a log tag to the buffer. If the key was added already, the value is
+// replaced.
+func (bld TagBufferBuilder) Add(key string, value interface{}) {
+	bld.b.addOrReplace(key, value)
+}
+
+// Finish returns the buffer with the tags that were added to the builder.
+func (bld TagBufferBuilder) Finish() *Buffer {
+	b := bld.b
+	bld.b = nil
+	return b
+}
+
 // Get returns the tags, as a slice. This slice must not be modified.
 func (b *Buffer) Get() []Tag {
 	return b.tags
